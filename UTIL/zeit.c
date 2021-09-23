@@ -66,9 +66,9 @@
 /*                                                                          */
 /****************************************************************************/
 
-
 #include "machdefs.h"
 #include "util.h"
+static int run_silently = 1;
 
 #ifdef HAVE_GETRUSAGE
 
@@ -121,6 +121,8 @@ double CCutil_zeit (void)
 #endif
 #endif
 
+
+
 double CCutil_zeit (void)
 {
     return ((double) clock()) / ((double) CLOCKS_PER_SEC);
@@ -157,7 +159,9 @@ void CCutil_init_timer (CCutil_timer *t, const char *name)
 void CCutil_start_timer (CCutil_timer *t)
 {
     if (t->szeit != -1.0) {
-        fprintf (stderr, "Warning: restarting running timer %s\n", t->name);
+        if (!run_silently){
+            fprintf (stderr, "Warning: restarting running timer %s\n", t->name);
+        }
     }
     t->szeit = CCutil_zeit ();
 }
@@ -165,7 +169,9 @@ void CCutil_start_timer (CCutil_timer *t)
 void CCutil_suspend_timer (CCutil_timer *t)
 {
     if (t->szeit == -1.0) {
-        fprintf (stderr, "Warning: suspended non-running timer %s\n", t->name);
+        if (!run_silently){
+            fprintf (stderr, "Warning: suspended non-running timer %s\n", t->name);
+        }
         return;
     }
     
@@ -176,7 +182,9 @@ void CCutil_suspend_timer (CCutil_timer *t)
 void CCutil_resume_timer (CCutil_timer *t)
 {
     if (t->szeit != -1.0) {
-        fprintf (stderr, "Warning: resuming running timer %s\n", t->name);
+        if(!run_silently){
+            fprintf (stderr, "Warning: resuming running timer %s\n", t->name);
+        }
         return;
     }
     t->szeit = CCutil_zeit ();
@@ -187,7 +195,9 @@ double CCutil_stop_timer (CCutil_timer *t, int printit)
     double z;
     
     if (t->szeit == -1.0) {
-        fprintf (stderr, "Warning: stopping non-running timer %s\n", t->name);
+        if (!run_silently){
+            fprintf (stderr, "Warning: stopping non-running timer %s\n", t->name);
+        }
         return 0.0;
     }
     z = CCutil_zeit() - t->szeit;

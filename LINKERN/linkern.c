@@ -323,8 +323,10 @@ int CClinkern_tour (int ncount, CCdatagroup *dat, int ecount,
     G.rstate = rstate;
 
     if (ncount < 10 && repeatcount > 0) {
-        printf ("Less than 10 nodes, setting repeatcount to 0\n");  
-        fflush (stdout);
+	if (silent == 0){
+        	printf ("Less than 10 nodes, setting repeatcount to 0\n");  
+        	fflush (stdout);
+	}
         repeatcount = 0;
     }
 

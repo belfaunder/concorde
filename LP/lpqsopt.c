@@ -271,6 +271,8 @@
 #include "tsp.h"
 #include <qsopt.h>
 
+static int run_silently = 1;
+
 struct CClp {
     QSprob p;
 };
@@ -903,7 +905,9 @@ int CClp_get_warmstart (CClp *lp, CClp_warmstart **w)
     }
 
     if (QStest_row_norms (lp->p) == 0) {
-        printf ("recomputing rownorms ...\n"); fflush (stdout);
+        if (!run_silently){
+            printf ("recomputing rownorms ...\n"); fflush (stdout);
+        }
         rval = QScompute_row_norms (lp->p);
         if (rval) {
             fprintf (stderr, "QScompute_row_norms failed\n");

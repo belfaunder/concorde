@@ -51,7 +51,7 @@ static int norm = CC_EUCLIDEAN;
 static int nlim = -1;
 static int upbound = INIT_UPBOUND;
 static int anytour = 0;
-static int silent = 0;
+static int silent = 1;
 
 int main (int ac, char **av)
 {

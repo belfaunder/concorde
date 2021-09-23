@@ -52,7 +52,7 @@ static int nnodes_want = 0;
 static int gridsize = 0;
 static int nearnum = 0;
 static int quadtry = 2;
-static int run_silently = 0;
+static int run_silently = 1;
 static int kick_type = CC_LK_WALK_KICK;
 static int tour_type = LK_QBORUVKA;
 
@@ -442,9 +442,10 @@ int main (int ac, char **av)
                 goto CLEANUP;
             }
         }
-        if (run_silently)
+        if (!run_silently){
             printf ("Lin-Kernighan Running Time: %.2f\n",
                     CCutil_zeit () - lkzeit);
+        }
         printf ("Final Cycle: %.0f\n", val);
         fflush (stdout);
     }

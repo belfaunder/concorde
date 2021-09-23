@@ -141,6 +141,7 @@ typedef struct graph {
 } graph;
 
 
+static int run_silently = 1;
 
 static void
     init_graph (graph *G),
@@ -400,17 +401,23 @@ int CCfmatch_fractional_2match (int ncount, int ecount, int *elist, int *elen,
     if (wantbasic) {
         szeit = CCutil_zeit ();
         if (basicrun (&G)) {
-            fprintf (stderr, "Did not find a basic optimal solution\n");
+            if (!run_silently) {
+                fprintf (stderr, "Did not find a basic optimal solution\n");
+            }
             rval = 1;
             goto CLEANUP;
         }
         if (chkmat (&G, &vbasic)) {
-            fprintf (stderr, "Chkmat found error in matching\n");
+            if (!run_silently) {
+                fprintf (stderr, "Chkmat found error in matching\n");
+            }
             rval = 1;
             goto CLEANUP;
         }
         if (vbasic != v) {
-            fprintf (stderr, "ERROR: Basis routine altered objective\n");
+            if (!run_silently) {
+                fprintf (stderr, "ERROR: Basis routine altered objective\n");
+            }
             rval = 1;
             goto CLEANUP;
         }
@@ -1035,7 +1042,9 @@ static int basic_check_scan (graph *G, node *n)
     if (basic_checkout_basic (n, 0, &odd_circuit, G->PLUS, G->MINUS))
         return 1;
     if (odd_circuit == (edge *) NULL) {
-        printf ("No odd circuit\n");
+        if (!run_silently){
+            printf ("No odd circuit\n");
+        }
         return 1;
     }
     return 0;
@@ -1064,7 +1073,9 @@ static int basicgrow (graph *G, node *n)
                 expandlist = expandlist->pnext;
             }
         }
-        fprintf (stderr, "ERROR: No dual change in basis finding code\n");
+        if (!run_silently){
+            fprintf (stderr, "ERROR: No dual change in basis finding code\n");
+        }
         return 1;
     }
 }
@@ -1092,18 +1103,22 @@ static int basic_grab_ones (node *n, int parity, edge **odd_circuit,
                     e->basic = 1;
                 } else if (*odd_circuit != e) {
                     fprintf (stderr, "ERROR: Two odd circuits in 1-graph\n");
-                    printf ("Circuit forming edges: %d-%d  %d-%d\n",
-                         (*odd_circuit)->ends[0]->name,
-                         (*odd_circuit)->ends[1]->name,
-                         e->ends[0]->name,
-                         e->ends[1]->name);
+                    if (!run_silently){
+                        printf ("Circuit forming edges: %d-%d  %d-%d\n",
+                            (*odd_circuit)->ends[0]->name,
+                            (*odd_circuit)->ends[1]->name,
+                            e->ends[0]->name,
+                            e->ends[1]->name);
+                    }
                     return 1;
                 }
             } else {
                 fprintf (stderr, "ERROR: Even circuit in 1-graph\n");
-                printf ("Circuit forming edge: %d-%d\n",
-                              e->ends[0]->name,
-                              e->ends[1]->name);
+                if (!run_silently){
+                    printf ("Circuit forming edge: %d-%d\n",
+                                e->ends[0]->name,
+                                e->ends[1]->name);
+                }
                 return 1;
             }
         }
@@ -1133,18 +1148,22 @@ static int basic_checkout_basic (node *n, int parity, edge **odd_circuit,
                     *odd_circuit = e;
                 } else if (*odd_circuit != e) {
                     fprintf (stderr, "ERROR: Two odd circuits in basish\n");
-                    printf ("Circuit forming edges: %d-%d  %d-%d\n",
-                         (*odd_circuit)->ends[0]->name,
-                         (*odd_circuit)->ends[1]->name,
-                         e->ends[0]->name,
-                         e->ends[1]->name);
+                    if (!run_silently){
+                        printf ("Circuit forming edges: %d-%d  %d-%d\n",
+                            (*odd_circuit)->ends[0]->name,
+                            (*odd_circuit)->ends[1]->name,
+                            e->ends[0]->name,
+                            e->ends[1]->name);
+                    }
                     return 1;
                 }
             } else {
                 fprintf (stderr, "ERROR: Even circuit in basis\n");
-                printf ("Circuit forming edge: %d-%d\n",
-                              e->ends[0]->name,
-                              e->ends[1]->name);
+                if (!run_silently){
+                    printf ("Circuit forming edge: %d-%d\n",
+                                e->ends[0]->name,
+                                e->ends[1]->name);
+                }
                 return 1;
             }
         }
@@ -1233,7 +1252,9 @@ static node *basic_dualchange (node *n, int PLUS, int MINUS)
         /* reverse sense of PLUS and MINUS */
         basic_minalpha (n, &new, &alpha, 1, PLUS, MINUS);
         if (alpha == MAXWEIGHT) {
-            printf ("Basic dual change required, but no candidate edges\n");
+            if (!run_silently){
+                printf ("Basic dual change required, but no candidate edges\n");
+            }
             return (node *) NULL;
         }
         alpha /= 2;
@@ -1391,8 +1412,10 @@ static int precheckoutedge (node *n1, node *n2, shortedge **list,
     if (wbar < 0) {
         if ((e = findedge (n1, n2)) != (edge *) NULL) {
             if (e->z != -wbar) {
-                printf ("Hmmm.  edge (%d-%d) has z %d, wbar %d\n",
-                e->ends[0]->name, e->ends[1]->name, e->z, wbar);
+                if (!run_silently){
+                    printf ("Hmmm.  edge (%d-%d) has z %d, wbar %d\n",
+                    e->ends[0]->name, e->ends[1]->name, e->z, wbar);
+                }
             }
         } else {
             s = shortedgealloc (shortedge_world);
@@ -1465,8 +1488,10 @@ static int kd_fixmatch (graph *G, int *radded, CCdatagroup *dat,
         if (n->y > maxy)
             maxy = n->y;
     }
-    printf ("Node weight spread: (%d, %d)\n", miny, maxy);
-    fflush (stdout);
+    if (!run_silently){
+        printf ("Node weight spread: (%d, %d)\n", miny, maxy);
+        fflush (stdout);
+    }
 
 /*
     THIS CODE CANNOT BE USED UNDER OS2 WITH CURRENT RADIX
@@ -1548,10 +1573,11 @@ static int kd_fixmatch (graph *G, int *radded, CCdatagroup *dat,
         } while (spread == newspread && nheavy < G->ncount/PULL_DIVISOR);
     }
 
-
-    printf ("Truncated %d nodes to get spread: (%d, %d)\n",
-        nheavy, order[top + 1]->y, order[bottom - 1]->y);
-    fflush (stdout);
+    if (!run_silently){
+        printf ("Truncated %d nodes to get spread: (%d, %d)\n",
+            nheavy, order[top + 1]->y, order[bottom - 1]->y);
+        fflush (stdout);
+    }
 
 
     if (nheavy) {
@@ -1754,9 +1780,10 @@ static int kd_fixmatch (graph *G, int *radded, CCdatagroup *dat,
                     heavy[j]->label = -1;
             }
         }
-
-        printf ("Need to check %d edges (saved %d checks)\n", added, saver);
-        fflush (stdout);
+        if (!run_silently){
+            printf ("Need to check %d edges (saved %d checks)\n", added, saver);
+            fflush (stdout);
+        }
         CCkdtree_free (&localkt);
 
         added = 0;
@@ -1771,9 +1798,11 @@ static int kd_fixmatch (graph *G, int *radded, CCdatagroup *dat,
             shortedgefree (&G->shortedge_world, s);
         }
         totaladded += added;
-        printf ("Pass %d: %d edges added (%d total), %d nodes checked\n",
+        if (!run_silently){
+            printf ("Pass %d: %d edges added (%d total), %d nodes checked\n",
                               passcount++, added, totaladded, nodeschecked);
-        fflush (stdout);
+            fflush (stdout);
+        }
     } while (added);
     *radded = totaladded;
 
@@ -1902,10 +1931,13 @@ static int x_fixmatch (graph *G, int *radded, CCdatagroup *dat)
             n2->sort.prev = &n1->sort.next;
         }
         totaladded += added;
-        printf ("Forward pass completed, %d nodes checked, %d edges checked\n",
-                nodeschecked, edgeschecked);
-        printf ("    %d edges added, total %d edges added\n",
-                added, totaladded);
+
+        if (!run_silently){
+            printf ("Forward pass completed, %d nodes checked, %d edges checked\n",
+                    nodeschecked, edgeschecked);
+            printf ("    %d edges added, total %d edges added\n",
+                    added, totaladded);
+        }
         if (added == 0)
             break;
         added = 0;
@@ -1949,10 +1981,12 @@ static int x_fixmatch (graph *G, int *radded, CCdatagroup *dat)
             n2->sort.prev = &n1->sort.next;
         }
         totaladded += added;
-        printf ("Backward pass completed, %d nodes checked, %d edges checked\n",
-                nodeschecked, edgeschecked);
-        printf ("    %d edges added, total %d edges added\n",
-                added, totaladded);
+        if (!run_silently){
+            printf ("Backward pass completed, %d nodes checked, %d edges checked\n",
+                    nodeschecked, edgeschecked);
+            printf ("    %d edges added, total %d edges added\n",
+                    added, totaladded);
+        }
     } while (added);
     *radded = totaladded;
     return 0;
@@ -1977,9 +2011,11 @@ static int junk_fixmatch (graph *G, int *radded, CCdatagroup *dat)
             }
         }
         totaladded += added;
-        printf ("Pass completed: %d edges added, total %d edges added\n",
-                 added, totaladded);
-        fflush (stdout);
+        if (!run_silently){
+            printf ("Pass completed: %d edges added, total %d edges added\n",
+                    added, totaladded);
+            fflush (stdout);
+        }
     } while (added);
 
     *radded = totaladded;

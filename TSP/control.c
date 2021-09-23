@@ -2059,7 +2059,7 @@ OUT_LOOP:
                 goto CLEANUP;
             }
             loopcount++;
-            if (silent && !lp->full_edges_valid) {
+            if (!silent && !lp->full_edges_valid) {
                 printf ("  LP Value %2d: %f  (%.2f seconds)\n", loopcount,
                      priceval, CCutil_zeit () - szeit);
                 fflush (stdout);
@@ -2357,7 +2357,7 @@ int CCtsp_subtour_loop (CCtsp_lp *lp, int silent, CCrandstate *rstate)
                 CCutil_stop_timer (&lp->stats.cutting_inner_loop, 0);
             }
             inside++;
-            if (silent) {
+            if (!silent) {
                 rval = lp_value (lp, &priceval);
                 if (rval) {rval = 1; goto CLEANUP;}
                 printf ("  LP Value %2d: %f\n", inside, priceval);
@@ -2557,7 +2557,7 @@ int CCtsp_blossom_loop (CCtsp_lp *lp, int silent, CCrandstate *rstate)
                 CCutil_stop_timer (&lp->stats.cutting_inner_loop, 0);
             }
             inside++;
-            if (silent) {
+            if (!silent) {
                 rval = lp_value (lp, &priceval);
                 if (rval) {rval = 1; goto CLEANUP;}
                 printf ("  LP Value %2d: %f\n", inside, priceval);
@@ -2784,7 +2784,7 @@ int CCtsp_subtour_and_blossom_loop (CCtsp_lp *lp, int silent,
                 CCutil_stop_timer (&lp->stats.cutting_inner_loop, 0);
             }
             inside++;
-            if (silent) {
+            if (!silent) {
                 rval = lp_value (lp, &priceval);
                 if (rval) {rval = 1; goto CLEANUP;}
                 printf ("  LP Value %2d: %f\n", inside, priceval);
@@ -2969,8 +2969,10 @@ static int full_edge_check (CCtsp_lp *lp, int *nadded, int silent,
         if (rval) return rval;
 
         if (val + penalty > lp->lowerbound) {
-            printf ("New lower bound: %f\n", val+ penalty);
-            fflush (stdout);
+            if (!silent){
+                printf ("New lower bound: %f\n", val+ penalty);
+                fflush (stdout);
+            }
             lp->lowerbound = val + penalty;
         }
     } else {

@@ -51,7 +51,7 @@ static int gridsize = 0;
 static int seed = 0;
 static int usenn2match = 0;
 static int quadtry = 2;
-static int run_silently = 0;
+static int run_silently = 1;
 
 
 
@@ -165,7 +165,9 @@ int main (int ac, char **av)
                    &v, thematching, thedual, thebasis, wantbasic, 
                    run_silently, &rstate);
     if (rval) {
-        fprintf (stderr, "Fractional matching routine failed\n");
+        if(!run_silently){
+            fprintf (stderr, "Fractional matching routine failed\n");
+        }
         goto CLEANUP;
     }
 

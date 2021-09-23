@@ -46,6 +46,7 @@ static int border_crossings = 0;
 static int border_optimization = 0;
 static int cat_tour = 0;
 static int innorm = CC_EUCLIDEAN;
+static int silent = 1;
 
 
 int
@@ -1336,7 +1337,7 @@ static int run_lk_subproblem (int scount, int *slist, int ncount, int *tour,
     CCcheck_NULL (newstour, "out of memory in run_lk_subproblem");
 
     rval = CClinkern_fixed (scount, &sdat, goodcount, goodlist,
-                 scount, stour, newstour, &sval, fixed_count, fixed, 0, rstate);
+                 scount, stour, newstour, &sval, fixed_count, fixed, silent, rstate);
 
     {
         char *hit;

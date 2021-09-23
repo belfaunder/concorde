@@ -88,7 +88,7 @@ int CCtsp_x_greedy_tour_lk (CCdatagroup *dat, int ncount, int ecount,
     }
 
     rval = CClinkern_tour (ncount, dat, tcount, tlist, ncount,
-             ncount > 1000 ? 500 : ncount/2, gcyc, cyc, val, 1, 0.0,
+             ncount > 1000 ? 500 : ncount/2, gcyc, cyc, val, silent, 0.0,
              0.0, (char *) NULL, CC_LK_GEOMETRIC_KICK, rstate);
     if (rval) {
         fprintf (stderr, "CClinkern_tour failed\n"); goto CLEANUP;

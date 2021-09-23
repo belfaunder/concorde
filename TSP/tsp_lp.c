@@ -548,7 +548,9 @@ static int first_lp (CCtsp_lp *lp, char *probloc, int ncount,
             silent, rstate);
              
     if (rval) {
-        fprintf (stderr, "Fractional matching routine failed\n");
+        if (!silent){
+            fprintf (stderr, "Fractional matching routine failed\n");
+        }
         CC_FREE (basis, int);
         CC_FREE (match, int);
         return 0;
@@ -1278,17 +1280,23 @@ static int load_lp (CCtsp_lp *lp, int silent)
             matbeg, matcnt, matind, matval, lb, ub);
 
     if (rval) {
-        fprintf (stderr, "couldn't load problem\n");
+        if (!silent) {
+            fprintf (stderr, "couldn't load problem\n");
+        }
         goto CLEANUP;
     }
 
     if (lp->warmstart) {
         rval = CClp_load_warmstart (lp->lp, lp->warmstart);
         if (rval) {
-            fprintf (stderr, "CClp_load_warmstart failed\n");
+            if (!silent) {
+                fprintf (stderr, "CClp_load_warmstart failed\n");
+            }
         }
     } else {
-        fprintf (stderr, "No warmstart, stumbling on anyway\n");
+        if (!silent) {
+            fprintf (stderr, "No warmstart, stumbling on anyway\n");
+        }
     }
 
     st = CCutil_stop_timer (&lp->stats.misc, 0);

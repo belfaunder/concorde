@@ -266,8 +266,9 @@ int CClinkern_path (int ncount, CCdatagroup *dat, int ecount, int *elist,
     G.rstate = rstate;
 
     if (ncount < 10 && nkicks > 0) {
-        printf ("Less than 10 nodes, setting nkicks to 0\n");  
-        fflush (stdout);
+        if (silent == 0) {
+            printf ("Less than 10 nodes, setting nkicks to 0\n");  fflush (stdout);
+        }
         nkicks = 0;
     }
 
@@ -491,8 +492,9 @@ static int repeated_lin_kernighan (graph *G, distobj *D, int *cyc,
 
     t = path_length (G, ncount, cyc, D);
     if (t != best) {
-        printf ("WARNING: LK incremental counter was off by %.0f\n", t-best);
-        fflush (stdout);
+        if (silent == 0) {
+            printf ("WARNING: LK incremental counter was off by %.0f\n", t-best); fflush (stdout);
+        }
         best = t;
     }
     *val = best;
